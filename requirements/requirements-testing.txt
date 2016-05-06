@@ -1,0 +1,14 @@
+tox
+isort
+flake8
+
+# PyTest for running the tests.
+pytest
+pytest-cov
+
+# docs
+sphinx
+sphinxcontrib-plantuml
+sphinx_rtd_theme
+
+mock
