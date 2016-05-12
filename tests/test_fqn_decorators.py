@@ -1,29 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-"""
-test_decorator-utils
-----------------------------------
-
-Tests for `decorator-utils` module.
-"""
-
 import functools
 import unittest
 
-import decorators
+import fqn_decorators
 import mock
 
 
-@decorators.Decorator
+@fqn_decorators.Decorator
 def my_test_func(a):
     return a
 
 
-@decorators.Decorator()
+@fqn_decorators.Decorator()
 class A(object):
 
-    @decorators.Decorator
+    @fqn_decorators.Decorator
     def method(self, a):
         return a
 
@@ -31,28 +23,30 @@ class A(object):
 class TestFqn(unittest.TestCase):
 
     def test_function(self):
-        self.assertEqual(decorators.get_fqn(decorators.get_fqn), 'decorators.decorators.get_fqn')
+        self.assertEqual(fqn_decorators.get_fqn(fqn_decorators.get_fqn), 'fqn_decorators.decorators.get_fqn')
 
     def test_decorated_function(self):
-        self.assertEqual(decorators.get_fqn(my_test_func), 'tests.test_decorators.my_test_func')
+        self.assertEqual(fqn_decorators.get_fqn(my_test_func), 'tests.test_fqn_decorators.my_test_func')
 
     def test_class(self):
-        self.assertEqual(decorators.get_fqn(decorators.Decorator), 'decorators.decorators.Decorator')
+        self.assertEqual(fqn_decorators.get_fqn(fqn_decorators.Decorator), 'fqn_decorators.decorators.Decorator')
 
     def test_method(self):
-        self.assertEqual(decorators.get_fqn(decorators.Decorator().before), 'decorators.decorators.Decorator.before')
+        self.assertEqual(
+            fqn_decorators.get_fqn(fqn_decorators.Decorator().before), 'fqn_decorators.decorators.Decorator.before'
+        )
 
     def test_decorated_method(self):
-        self.assertEqual(decorators.get_fqn(A().method), 'tests.test_decorators.A.method')
+        self.assertEqual(fqn_decorators.get_fqn(A().method), 'tests.test_fqn_decorators.A.method')
 
     def test_decorated_class(self):
-        self.assertEqual(decorators.get_fqn(A), 'tests.test_decorators.A')
+        self.assertEqual(fqn_decorators.get_fqn(A), 'tests.test_fqn_decorators.A')
 
 
 class TestDecorator(unittest.TestCase):
 
     def test_getattr(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             pass
 
         @Decorator
@@ -63,7 +57,7 @@ class TestDecorator(unittest.TestCase):
             self.fail(my_method.doesnotexists)
 
     def test_class_decoration(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             def before(self):
                 self.kwargs['username'] = 'root'
 
@@ -76,7 +70,7 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual(user.username, 'root')
 
     def test_advanced_class_decoration(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             def before(self):
                 self.kwargs['username'] = self.params['username']
 
@@ -89,7 +83,7 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual(user.username, 'root')
 
     def test_function_decoration(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             def after(self):
                 self.result = True
 
@@ -100,7 +94,7 @@ class TestDecorator(unittest.TestCase):
         self.assertTrue(return_false())
 
     def test_advanced_function_decoration(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             def after(self):
                 self.result = self.params['result']
 
@@ -111,7 +105,7 @@ class TestDecorator(unittest.TestCase):
         self.assertIsNone(return_false())
 
     def test_method_decoration(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             def after(self):
                 if self.result != 'root':
                     raise Exception('Not root')
@@ -129,7 +123,7 @@ class TestDecorator(unittest.TestCase):
             User(username='admin').get_username()
 
     def test_static_method_instance_decoration(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             def after(self):
                 self.result = False
 
@@ -143,7 +137,7 @@ class TestDecorator(unittest.TestCase):
         self.assertFalse(User().staticmethod())
 
     def test_class_method_instance_decoration(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             def after(self):
                 self.result = False
 
@@ -156,7 +150,7 @@ class TestDecorator(unittest.TestCase):
         self.assertFalse(User().classmethod())
 
     def test_static_method_decoration(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             def after(self):
                 self.result = False
 
@@ -169,7 +163,7 @@ class TestDecorator(unittest.TestCase):
         self.assertFalse(User.staticmethod())
 
     def test_class_method_decoration(self):
-        class Decorator(decorators.Decorator):
+        class Decorator(fqn_decorators.Decorator):
             def after(self):
                 self.result = False
 
@@ -183,11 +177,11 @@ class TestDecorator(unittest.TestCase):
 
     def test_exception(self):
         class User(object):
-            @decorators.Decorator
+            @fqn_decorators.Decorator
             def check_permission(self):
                 raise Exception('Permission denied')
 
-        with mock.patch('decorators.Decorator.exception') as mocked_method:
+        with mock.patch('fqn_decorators.Decorator.exception') as mocked_method:
             with self.assertRaises(Exception):
                 User().check_permission()
             self.assertTrue(mocked_method.called)
@@ -214,12 +208,12 @@ class TestChainedDecorator(unittest.TestCase):
                 return func_wrapper(func)
             return func_wrapper
 
-        class SimpleDecorator(decorators.Decorator):
+        class SimpleDecorator(fqn_decorators.Decorator):
             def after(self):
                 self.result = self.fqn
 
         class MyClass(object):
-            @decorators.chained_decorator(decorators=[
+            @fqn_decorators.chained_decorator(decorators=[
                 SimpleDecorator, simple_decorator, simple_keyword_decorator(result=False)
             ])
             def my_method(self):

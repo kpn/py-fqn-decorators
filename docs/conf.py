@@ -58,7 +58,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'decorators'
+project = u'fqn_decorators'
 copyright = u'KPN'
 author = u'Mattias Sluis'
 
@@ -212,7 +212,7 @@ html_static_path = ['_static']
 # html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'fqn-decoratordoc'
+htmlhelp_basename = 'fqn-decoratorsdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 

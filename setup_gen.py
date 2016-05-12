@@ -12,7 +12,7 @@ write_setup_py(
     author_email='mattias.sluis@kpn.com',
     url='ssh://git@github.com:kpn-digital/py-fqn-decorators.git',
     install_requires=list_requirements('requirements/requirements-base.txt'),
-    packages=find_packages(exclude=['decorators.tests*']),
+    packages=find_packages(exclude=['tests*']),
     tests_require=['tox'],
     include_package_data=True,
     zip_safe=False,

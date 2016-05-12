@@ -28,7 +28,7 @@ At the command line::
 Usage
 -----
 .. start_usage
-.. py:currentmodule:: decorators.decorators
+.. py:currentmodule:: fqn_decorators.decorators
 
 Introduction
 ------------
@@ -45,10 +45,10 @@ Simple decorator
 
 Create a simple decorator::
 
-    import decorators
+    import fqn_decorators
     import time
 
-    class time_it(decorators.Decorator):
+    class time_it(fqn_decorators.Decorator):
 
         def before(self):
             self.start = time.time()
@@ -77,10 +77,10 @@ It is also very easy to create a decorator with arguments.
 
 Example::
 
-    import decorators
+    import fqn_decorators
     import time
 
-    class threshold(decorators.Decorator):
+    class threshold(fqn_decorators.Decorator):
 
         def before(self):
             self.start = time.time()

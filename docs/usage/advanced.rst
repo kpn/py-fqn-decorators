@@ -1,7 +1,7 @@
 ==============
 Advanced Usage
 ==============
-.. py:currentmodule:: decorators.decorators
+.. py:currentmodule:: fqn_decorators.decorators
 
 .. note::
     It is possible to decorate static and class methods but you have to ensure that the order of decorators is right.
@@ -80,9 +80,9 @@ Non-keyworded decorators
 
 Although not supported out of the box, it is possible to create decorators with non-keyworded or positional arguments::
 
-    import decorators
+    import fqn_decorators
 
-    class arg_decorator(decorators.Decorator):
+    class arg_decorator(fqn_decorators.Decorator):
 
         def __init__(self, func=None, *args, **kwargs):
             self._args = args
