@@ -10,10 +10,9 @@ def get_fqn(obj):
     It is unable to properly determine the FQN of class instances, static methods and class methods.
     """
     path = [getattr(obj, '__module__', None)]
-    if sys.version_info[0] > 2:
-        qualname = getattr(obj, '__qualname__', None)
-        if qualname:
-            path.append(qualname.replace('<locals>.', ''))
+    qualname = getattr(obj, '__qualname__', None)
+    if qualname:
+        path.append(qualname.replace('<locals>.', ''))
     else:
         im_class = getattr(obj, 'im_class', None)
         path.append(getattr(im_class, '__name__', None))
