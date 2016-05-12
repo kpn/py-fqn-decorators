@@ -1,0 +1,19 @@
+language: python
+sudo: required
+services:
+  - docker
+script:
+  - make docker/build
+before_install:
+  - pip install codecov
+after_success:
+  - codecov
+deploy:
+  provider: pypi
+  user: kpn-digital
+  skip_cleanup: true
+  password:
+    secure: ...travis encrypt --add deploy.password...
+  on:
+    tags: true
+    all_branches: true
