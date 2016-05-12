@@ -1,19 +1,19 @@
 language: python
 sudo: required
 services:
-  - docker
+- docker
 script:
-  - make docker/build
+- make docker/build
 before_install:
-  - pip install codecov
+- pip install codecov
 after_success:
-  - codecov
+- codecov
 deploy:
   provider: pypi
-  user: kpn-digital
+  user: kpn-sergey
   skip_cleanup: true
   password:
-    secure: ...travis encrypt --add deploy.password...
+    secure: nW/NxDFTfL+L+8wl8FqFEpEoeftkcND0q1dTg78c0D1ILXDQBlRHnhn3huES53viozeqndq5rbTzCbqqhF3xyeoY70oliQipx/pY0iCArcxd1BxQW8P+BmL0wuxiQsVt4kSZYn5I0RzwxifDK7YMAgILlUZEXCyXL5sK2K6xSZ8MWQdsD1OWsfn9oh+mjIpoKkyDmEmFD7DUHG0GzzUU1oogP9ZQNUiI3Kxni4laH0B4g+PFNumomG5AESV+Ft1GjqorUR8VPPFA5oQNa/HS3gdcECbVSkv5EgvYyhVM/mEHjTvl09Ddtt22hd68nMZE52nFrou4lxU33XNn9AFet2PVdnH4/seVys/D/SC5tDWa7GCrcAc47FChQeSVYjXvnaabAqzoefVukD7WAwK7esG5rBw0REDfrD9bUuHISC3Io6ESBz8dZAKJ+IuwAuCxhWtgNCtj1RbA4snMbqcd2BSP4bWwvw8q9nA7hROqrYWsgzvoSHKEqSpEcc5UvHwJI7yeElGBwjP+xweeboS269RRRaBJzl1kdmkcOLU9B4aevlSSJ42zxHvyuiDGoHR2lN0Pp2otIEAmmRLk5lV1sI9oQwqq87PX1C5ffcjGkXHs8NMbFkRi0xG4CJp3dh03fIPpuAQzI//YWWFhQaP0gXe3J9xfd1Wdhhh8iLSq3pY=
   on:
     tags: true
     all_branches: true
