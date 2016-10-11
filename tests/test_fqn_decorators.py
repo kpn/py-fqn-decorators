@@ -9,6 +9,8 @@ import pytest
 from . import examples
 
 
+class InheritedExample(examples.B):
+    pass
 
 
 class TestFqn(object):
@@ -32,6 +34,10 @@ class TestFqn(object):
     def test_decorated_method(self):
         assert fqn_decorators.get_fqn(examples.A().method) == \
             'tests.examples.A.method'
+
+    def test_decorated_inherited_method(self):
+        assert fqn_decorators.get_fqn(InheritedExample().method) == \
+            'tests.test_fqn_decorators.InheritedExample.method'
 
     def test_decorated_class(self):
         assert fqn_decorators.get_fqn(examples.A) == 'tests.examples.A'
@@ -213,4 +219,4 @@ class TestChainedDecorator(object):
             def my_method(self):
                 pass
 
-        assert MyClass().my_method().endswith('MyClass.my_method') is True
+        assert MyClass().my_method().endswith('MyClass.my_method')
