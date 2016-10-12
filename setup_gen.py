@@ -10,7 +10,7 @@ write_setup_py(
     long_description=open('README.rst').read(),
     author="Mattias Sluis",
     author_email='mattias.sluis@kpn.com',
-    url='ssh://git@github.com:kpn-digital/py-fqn-decorators.git',
+    url='https://github.com/kpn-digital/py-fqn-decorators',
     install_requires=list_requirements('requirements/requirements-base.txt'),
     packages=find_packages(exclude=['tests*']),
     tests_require=['tox'],
