@@ -18,5 +18,5 @@ setup(**{'author': 'Mattias Sluis',
  'packages': ['fqn_decorators'],
  'tests_require': ['tox'],
  'url': 'ssh://git@github.com:kpn-digital/py-fqn-decorators.git',
- 'version': None,
+ 'version': '1.0.0',
  'zip_safe': False})
