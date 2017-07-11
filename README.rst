@@ -99,4 +99,37 @@ Example::
     >>> my_function()
     Exception: Execution took longer than the threshold
 
+
+Async Decorator
+---------------
+
+There's also support for decorating coroutines (or any awaitable), for Python >=3.5 only.
+
+The implementation is the same as with the sync version, just inherit from
+:class:`~fqn_decorators.async.AsyncDecorator` instead.
+
+Example::
+
+    import asyncio
+    import time
+    from fqn_decorators.async import AsyncDecorator
+
+    class time_it_async(AsyncDecorator):
+
+        def before(self):
+            self.start = time.time()
+
+        def after(self):
+            duration = time.time() - self.start
+            print("{0} took {1} seconds".format(self.fqn, duration))
+
+    @time_it_async
+    async def coro():
+        await asyncio.sleep(1)
+
+    >>> loop = asyncio.get_event_loop()
+    >>> loop.run_until_complete(coro())
+    __main__.coro took 1.001493215560913 seconds
+
+
 .. end_usage
