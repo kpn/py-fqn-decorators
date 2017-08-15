@@ -6,6 +6,14 @@ fqn_decorators
     :undoc-members:
     :show-inheritance:
 
+fqn_decorators.async module
+---------------------------
+
+.. automodule:: fqn_decorators.async
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 fqn_decorators.decorators module
 --------------------------------
 
