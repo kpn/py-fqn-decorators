@@ -6,6 +6,7 @@ pkgversion
 # PyTest for running the tests.
 pytest
 pytest-cov
+pytest-asyncio; python_version >= '3.5'
 
 # docs
 sphinx
