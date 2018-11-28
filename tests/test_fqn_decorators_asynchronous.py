@@ -1,36 +1,33 @@
 import mock
 import pytest
 from fqn_decorators import get_fqn
-from fqn_decorators.async import AsyncDecorator
-
-# All test functions in this module will be treated as coroutines.
-# This avoids having to decorate every function with ``@pytest.mark.asyncio``.
-pytestmark = pytest.mark.asyncio
+from fqn_decorators.asynchronous import AsyncDecorator
 
 
 class TestFqnAsync:
-    async def test_class_async(self):
+    def test_class_async(self):
         assert get_fqn(AsyncDecorator) == \
-            'fqn_decorators.async.AsyncDecorator'
+            'fqn_decorators.asynchronous.AsyncDecorator'
 
-    async def test_method_async(self):
+    def test_method_async(self):
         assert get_fqn(AsyncDecorator().before) == \
-            'fqn_decorators.async.AsyncDecorator.before'
+            'fqn_decorators.asynchronous.AsyncDecorator.before'
 
-    async def test_decorated_method_async(self):
+    def test_decorated_method_async(self):
         assert get_fqn(AsyncDecorator().before) == \
-            'fqn_decorators.async.AsyncDecorator.before'
+            'fqn_decorators.asynchronous.AsyncDecorator.before'
 
-    async def test_decorated_method(self):
+    def test_decorated_method(self):
         class User:
             @AsyncDecorator
             async def method(self, a):
                 return a
 
         assert get_fqn(User().method) == \
-            'tests.test_fqn_decorators_async.User.method'
+            'tests.test_fqn_decorators_asynchronous.User.method'
 
 
+@pytest.mark.asyncio
 class TestAsyncDecorator:
     async def test_getattr_async(self):
         class Decorator(AsyncDecorator):
@@ -105,7 +102,7 @@ class TestAsyncDecorator:
             def check_permission(self):
                 raise RuntimeError('Permission denied')
 
-        with mock.patch('fqn_decorators.async.AsyncDecorator.exception') as mocked_method:
+        with mock.patch('fqn_decorators.asynchronous.AsyncDecorator.exception') as mocked_method:
             with pytest.raises(RuntimeError):
                 await User().check_permission()
             assert mocked_method.called is True
