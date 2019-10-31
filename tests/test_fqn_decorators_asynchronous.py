@@ -4,6 +4,10 @@ from fqn_decorators import get_fqn
 from fqn_decorators.asynchronous import AsyncDecorator
 
 
+class CustomException(Exception):
+    pass
+
+
 class TestFqnAsync:
     def test_class_async(self):
         assert get_fqn(AsyncDecorator) == \
@@ -109,3 +113,30 @@ class TestAsyncDecorator:
 
         with pytest.raises(RuntimeError):
             await User().check_permission()
+
+    async def test_function_parametrized_decoration_expected(self):
+        class Decorator(AsyncDecorator):
+            def after(self):
+                if 'decorator_param' not in self.params:
+                    raise CustomException('No decorator param')
+                self.result = self.params['decorator_param']
+
+        @Decorator
+        async def return_decorator_value():
+            return False
+
+        with pytest.raises(CustomException):
+            await return_decorator_value()
+
+    async def test_function_parametrized_decoration(self):
+        class Decorator(AsyncDecorator):
+            def after(self):
+                if 'decorator_param' not in self.params:
+                    raise CustomException('No decorator param')
+                self.result = self.params['decorator_param']
+
+        @Decorator(decorator_param='hello')
+        async def return_decorator_value():
+            return False
+
+        assert await return_decorator_value() == 'hello'
