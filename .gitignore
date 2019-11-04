@@ -111,6 +111,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+venv/
 build/
 develop-eggs/
 dist/
@@ -126,6 +127,7 @@ var/
 .installed.cfg
 *.egg
 .python-version
+setup.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

@@ -7,7 +7,8 @@ write_setup_py(
     name='fqn-decorators',
     version=pep440_version(),
     description="Easily create multi-purpose decorators that have access to the FQN of the original function.",
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     author="Mattias Sluis",
     author_email='mattias.sluis@kpn.com',
     url='https://github.com/kpn-digital/py-fqn-decorators',
@@ -28,6 +29,7 @@ write_setup_py(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Internet :: WWW/HTTP',
     ]
 )
