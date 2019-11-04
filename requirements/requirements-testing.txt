@@ -1,15 +1,14 @@
-tox
+# Distribution
+pkgversion
+twine
+
+# Code style
 isort
 flake8
-pkgversion
 
-# PyTest for running the tests.
+# Tests
+tox
 pytest
 pytest-cov
 pytest-asyncio; python_version >= '3.5'
-
-# docs
-sphinx
-sphinx_rtd_theme
-
 mock

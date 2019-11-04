@@ -10,11 +10,12 @@ PIP:="venv/bin/pip"
 CMD_FROM_VENV:=". venv/bin/activate; which"
 TOX=$(shell "$(CMD_FROM_VENV)" "tox")
 PYTHON=$(shell "$(CMD_FROM_VENV)" "python")
+TWINE=$(shell "$(CMD_FROM_VENV)" "twine")
 TOX_PY_LIST="$(shell $(TOX) -l | grep ^py | xargs | sed -e 's/ /,/g')"
 
-.PHONY: clean docsclean pyclean test lint isort docs docker setup.py requirements
+.PHONY: clean pyclean test lint isort docker setup.py build publish
 
-tox: clean requirements
+tox:
 	$(TOX)
 
 pyclean:
@@ -22,18 +23,14 @@ pyclean:
 	@rm -rf *.egg-info build
 	@rm -rf coverage.xml .coverage
 
-docsclean:
-	@rm -fr docs/_build/
-	@rm -fr docs/api/
-
-clean: pyclean docsclean
+clean: pyclean
 	@rm -rf venv
 	@rm -rf .tox
 
 venv:
 	@python3.6 -m venv venv
 	@$(PIP) install -U "pip>=7.0" -q
-	@$(PIP) install -U "pip>=7.0" -q
+	@$(PIP) install -U setuptools -q
 	@$(PIP) install -r $(DEPS)
 
 test: venv pyclean
@@ -49,20 +46,22 @@ lint: venv
 isort: venv
 	@$(TOX) -e isort-fix
 
-docs: venv docsclean
-	@$(TOX) -e docs
-
 docker:
 	$(DOCKER_COMPOSE) run --rm --service-ports app bash
 
 docker/%:
 	$(DOCKER_COMPOSE) run --rm --service-ports app make $*
 
+## Distribution
 setup.py: venv
 	@$(PYTHON) setup_gen.py
-	@$(PYTHON) setup.py check --restructuredtext
 
-publish: setup.py
-	@$(PYTHON) setup.py sdist upload
+build: venv tox
+	-rm -f setup.py
+	-rm -rf dist build
+	$(MAKE) setup.py
+	$(PYTHON) setup.py sdist
+	$(TWINE) check dist/*
 
-build: clean venv tox setup.py
+publish: build
+	$(TWINE) upload dist/*
