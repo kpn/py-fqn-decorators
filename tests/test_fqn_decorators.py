@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import functools
+import sys
 
 import fqn_decorators
 import mock
@@ -41,6 +42,71 @@ class TestFqn(object):
 
     def test_decorated_class(self):
         assert fqn_decorators.get_fqn(examples.A) == 'tests.examples.A'
+
+
+class TestGetCallerFqn:
+    def test_function(self):
+        def inline_method():
+            return fqn_decorators.get_caller_fqn()
+
+        assert inline_method() == 'tests.test_fqn_decorators.TestGetCallerFqn.test_function'
+
+    def test_method(self):
+        class Inline:
+            def inline(self):
+                return fqn_decorators.get_caller_fqn()
+
+        assert Inline().inline() == 'tests.test_fqn_decorators.TestGetCallerFqn.test_method'
+
+    @pytest.mark.skipif(sys.version_info < (3, 0), reason='requires python3')
+    def test_caller_is_method(self):
+        def inline_method():
+            return fqn_decorators.get_caller_fqn()
+
+        class Caller:
+            def parent(self):
+                return inline_method()
+
+        assert Caller().parent() == (
+            'tests.test_fqn_decorators.TestGetCallerFqn.test_caller_is_method.Caller.parent'
+        )
+
+    def test_caller_is_inner(self):
+        def child_method():
+            return fqn_decorators.get_caller_fqn()
+
+        def parent_method():
+            return child_method()
+
+        assert parent_method() == (
+            'tests.test_fqn_decorators.TestGetCallerFqn.test_caller_is_inner.parent_method'
+        )
+
+    @pytest.mark.skipif(sys.version_info < (3, 0), reason='requires python3')
+    def test_caller_is_complex(self):
+        def child_method():
+            return fqn_decorators.get_caller_fqn()
+
+        def outer_method():
+            return child_method()
+
+        class Caller:
+            def parent(self):
+                return outer_method()
+
+            def parent_with_inner(self):
+                def inner_parent():
+                    return outer_method()
+                return inner_parent()
+
+        assert Caller().parent() == (
+            'tests.test_fqn_decorators.TestGetCallerFqn.test_caller_is_complex.Caller.parent.outer_method'
+        )
+
+        assert Caller().parent_with_inner() == (
+            'tests.test_fqn_decorators.TestGetCallerFqn.test_caller_is_complex.'
+            'Caller.parent_with_inner.inner_parent.outer_method'
+        )
 
 
 class TestDecorator(object):

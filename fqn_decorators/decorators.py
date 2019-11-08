@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import functools
+import inspect
 import sys
 
 
@@ -29,6 +30,64 @@ def get_fqn(obj):
         path.append(getattr(im_class, '__name__', None))
         path.append(getattr(obj, '__name__', None))
     return '.'.join(filter(None, path))
+
+
+def get_caller_fqn():
+    """
+    Use this method inside the function/method to get the fully qualified name (FQN) of its caller.
+    Works for methods and functions including inner ones.
+
+    E.g. consider module 'src.check_fqn':
+      def parent():
+          internal()
+
+      def internal():
+          get_caller_fqn()
+
+      parent()  # Returns FQN of the method that called 'internal()': 'src.check_fqn.parent'
+
+    For complex nested inner functions FQN will represent a stack trace of calls (only for Python3):
+      def inside():
+          def child_method():
+              return get_caller_fqn()
+
+          def outer_method():
+              return child_method()
+
+          class Caller:
+              def parent_with_inner(self):
+                  def inner_parent():
+                      return outer_method()
+                  return inner_parent()
+
+          return Caller().parent_with_inner()
+
+      inside()  # Returns 'src.check_fqn.inside.Caller.parent_with_inner.inner_parent.outer_method'
+    """
+    stack_depth = len(inspect.stack())
+    depth = 2  # 0: current method, 1: method that uses this function, 2: actual caller
+    function_name = None
+    while depth < stack_depth:
+        caller_frame = inspect.stack()[depth]
+        try:
+            frame, caller_function = caller_frame.frame, caller_frame.function
+        except AttributeError:  # old Python versions
+            frame, caller_function = caller_frame[0], caller_frame[3]
+        # If caller is a function
+        try:
+            return get_fqn(frame.f_globals[caller_function])
+        except KeyError:
+            pass
+        # If caller is a class method
+        function_name = '.'.join(filter(None, [caller_function, function_name]))  # Handle nested inner calls
+        try:
+            return '{}.{}'.format(get_fqn(frame.f_locals['self'].__class__), function_name)
+        except KeyError:
+            pass
+        # We are called from internal method we can't obtain reference to, e.g. list comprehension or nested inner
+        # functions -> try to go one level up the stack
+        depth += 1
+    return ''
 
 
 class Decorator(object):
