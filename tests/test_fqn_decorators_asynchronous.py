@@ -1,3 +1,5 @@
+import asyncio
+
 import mock
 import pytest
 from fqn_decorators import get_fqn
@@ -140,3 +142,16 @@ class TestAsyncDecorator:
             return False
 
         assert await return_decorator_value() == 'hello'
+
+    async def test_parallel_independent_execution(self):
+        class Decorator(AsyncDecorator):
+            def after(self):
+                self.result = self.kwargs['a']
+
+        @Decorator
+        async def return_decorator_value(a=None):
+            return 0
+
+        params = list(range(5))
+        results = await asyncio.gather(*[return_decorator_value(a=x) for x in params], return_exceptions=True)
+        assert sorted(results) == params

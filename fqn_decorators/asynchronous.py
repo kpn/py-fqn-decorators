@@ -11,13 +11,9 @@ from .decorators import Decorator
 class AsyncDecorator(Decorator):
     # __call__ should be sync to return a decorator class object, not a coroutine
     def __call__(self, *args, **kwargs):
-        if not self.func:
-            # Decorator initialized without providing the function (parametrised decorator)
-            return self.__class__(args[0], **self.params)
-
-        self.fqn = self.get_fqn()
-        self.args = args
-        self.kwargs = kwargs
+        return_value, should_return = self._ensure_decorator_instance(*args, **kwargs)
+        if should_return:
+            return return_value
 
         async def async_wrapper(*args, **kwargs):
             self.before()
