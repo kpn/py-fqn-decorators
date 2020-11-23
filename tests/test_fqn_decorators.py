@@ -188,6 +188,25 @@ class TestDecorator(object):
         with pytest.raises(Exception):
             User().check_permission()
 
+    def test_decorator_attributes_are_only_for_internal_processing(self):
+        class Decorator(fqn_decorators.Decorator):
+            def before(self):
+                self.kwargs['b'] *= 2
+
+            def after(self):
+                self.result = (self.kwargs['a'] + self.kwargs['b']) * 10
+
+        @Decorator(example_param=True)
+        def f(a=0, b=0) -> int:
+            return a + b
+
+        assert f(a=1, b=1) == 30  # (1 + 1*2) * 10
+        assert f.func
+        assert f.params == dict(example_param=True)
+        assert not f.args
+        assert not f.kwargs
+        assert f.result is None
+
 
 class TestChainedDecorator(object):
 

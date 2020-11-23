@@ -36,9 +36,12 @@ class Decorator(object):
     A base class to easily create decorators.
     """
 
-    def __init__(self, func=None, **params):
+    def __init__(self, func=None, _initialized=False, **params):
         if func:
             functools.update_wrapper(self, func)
+
+        self._initialized = _initialized
+        """Special flag that indicates we are in a separate decorator instance during a function call"""
 
         self.func = func
         """The callable that is being decorated"""
@@ -61,14 +64,29 @@ class Decorator(object):
         self.exc_info = None
         """Exception information in case of an exception"""
 
-    def __call__(self, *args, **kwargs):
-        if not self.func:
-            # Decorator initialized without providing the function
-            return self.__class__(args[0], **self.params)
+    def _ensure_decorator_instance(self, *args, **kwargs):
+        """
+        Makes sure that a separate decorator class instance is created for each decorated function call.
+        Otherwise all function decorator attributes will be shared across all calls.
 
+        NB: to be called only from the __call__() method
+
+        Returns: tuple(object, bool) : where bool is a flag whether the object must be returned to the caller
+        """
+        if not self._initialized:
+            if not self.func:
+                # Decorator was initialized with arguments
+                return self.__class__(args[0], **self.params), True
+            return self.__class__(self.func,  _initialized=True, **self.params)(*args, **kwargs), True
         self.fqn = self.get_fqn()
         self.args = args
         self.kwargs = kwargs
+        return None, False
+
+    def __call__(self, *args, **kwargs):
+        return_value, should_return = self._ensure_decorator_instance(*args, **kwargs)
+        if should_return:
+            return return_value
 
         self.before()
         try:
