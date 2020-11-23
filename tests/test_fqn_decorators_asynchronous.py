@@ -2,6 +2,7 @@ import asyncio
 
 import mock
 import pytest
+
 from fqn_decorators import get_fqn
 from fqn_decorators.asynchronous import AsyncDecorator
 
@@ -12,16 +13,13 @@ class CustomException(Exception):
 
 class TestFqnAsync:
     def test_class_async(self):
-        assert get_fqn(AsyncDecorator) == \
-            'fqn_decorators.asynchronous.AsyncDecorator'
+        assert get_fqn(AsyncDecorator) == "fqn_decorators.asynchronous.AsyncDecorator"
 
     def test_method_async(self):
-        assert get_fqn(AsyncDecorator().before) == \
-            'fqn_decorators.asynchronous.AsyncDecorator.before'
+        assert get_fqn(AsyncDecorator().before) == "fqn_decorators.asynchronous.AsyncDecorator.before"
 
     def test_decorated_method_async(self):
-        assert get_fqn(AsyncDecorator().before) == \
-            'fqn_decorators.asynchronous.AsyncDecorator.before'
+        assert get_fqn(AsyncDecorator().before) == "fqn_decorators.asynchronous.AsyncDecorator.before"
 
     def test_decorated_method(self):
         class User:
@@ -29,8 +27,7 @@ class TestFqnAsync:
             async def method(self, a):
                 return a
 
-        assert get_fqn(User().method) == \
-            'tests.test_fqn_decorators_asynchronous.User.method'
+        assert get_fqn(User().method) == "tests.test_fqn_decorators_asynchronous.User.method"
 
 
 @pytest.mark.asyncio
@@ -60,8 +57,8 @@ class TestAsyncDecorator:
     async def test_method_decoration_async(self):
         class Decorator(AsyncDecorator):
             def after(self):
-                if self.result != 'root':
-                    raise Exception('Not root')
+                if self.result != "root":
+                    raise Exception("Not root")
 
         class User:
             def __init__(self, username):
@@ -71,9 +68,9 @@ class TestAsyncDecorator:
             async def get_username(self):
                 return self.username
 
-        assert await User(username='root').get_username() == 'root'
+        assert await User(username="root").get_username() == "root"
         with pytest.raises(Exception):
-            await User(username='admin').get_username()
+            await User(username="admin").get_username()
 
     async def test_static_method_decoration_async(self):
         class Decorator(AsyncDecorator):
@@ -81,7 +78,6 @@ class TestAsyncDecorator:
                 self.result = False
 
         class User:
-
             @staticmethod
             @Decorator
             async def staticmethod():
@@ -106,9 +102,9 @@ class TestAsyncDecorator:
         class User:
             @AsyncDecorator
             def check_permission(self):
-                raise RuntimeError('Permission denied')
+                raise RuntimeError("Permission denied")
 
-        with mock.patch('fqn_decorators.asynchronous.AsyncDecorator.exception') as mocked_method:
+        with mock.patch("fqn_decorators.asynchronous.AsyncDecorator.exception") as mocked_method:
             with pytest.raises(RuntimeError):
                 await User().check_permission()
             assert mocked_method.called is True
@@ -119,9 +115,9 @@ class TestAsyncDecorator:
     async def test_function_parametrized_decoration_expected(self):
         class Decorator(AsyncDecorator):
             def after(self):
-                if 'decorator_param' not in self.params:
-                    raise CustomException('No decorator param')
-                self.result = self.params['decorator_param']
+                if "decorator_param" not in self.params:
+                    raise CustomException("No decorator param")
+                self.result = self.params["decorator_param"]
 
         @Decorator
         async def return_decorator_value():
@@ -133,20 +129,20 @@ class TestAsyncDecorator:
     async def test_function_parametrized_decoration(self):
         class Decorator(AsyncDecorator):
             def after(self):
-                if 'decorator_param' not in self.params:
-                    raise CustomException('No decorator param')
-                self.result = self.params['decorator_param']
+                if "decorator_param" not in self.params:
+                    raise CustomException("No decorator param")
+                self.result = self.params["decorator_param"]
 
-        @Decorator(decorator_param='hello')
+        @Decorator(decorator_param="hello")
         async def return_decorator_value():
             return False
 
-        assert await return_decorator_value() == 'hello'
+        assert await return_decorator_value() == "hello"
 
     async def test_parallel_independent_execution(self):
         class Decorator(AsyncDecorator):
             def after(self):
-                self.result = self.kwargs['a']
+                self.result = self.kwargs["a"]
 
         @Decorator
         async def return_decorator_value(a=None):

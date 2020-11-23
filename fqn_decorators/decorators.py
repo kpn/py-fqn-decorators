@@ -9,26 +9,26 @@ def get_fqn(obj):
     It only works for classes, methods and functions.
     It is unable to properly determine the FQN of class instances, static methods and class methods.
     """
-    path = [getattr(obj, '__module__', None)]
-    qualname = getattr(obj, '__qualname__', None)
+    path = [getattr(obj, "__module__", None)]
+    qualname = getattr(obj, "__qualname__", None)
     if qualname:
-        path.append(qualname.replace('<locals>.', ''))
-        im_self = getattr(obj, '__self__', None)
-        im_class = getattr(im_self, '__class__', None)
+        path.append(qualname.replace("<locals>.", ""))
+        im_self = getattr(obj, "__self__", None)
+        im_class = getattr(im_self, "__class__", None)
         if im_self and im_class:
             path = [
-                getattr(im_class, '__module__', None),
-                getattr(im_class, '__name__', None),
-                getattr(obj, '__name__', None)
+                getattr(im_class, "__module__", None),
+                getattr(im_class, "__name__", None),
+                getattr(obj, "__name__", None),
             ]
     else:
-        im_class = getattr(obj, 'im_class', None)
-        im_class_module = getattr(im_class, '__module__', None)
+        im_class = getattr(obj, "im_class", None)
+        im_class_module = getattr(im_class, "__module__", None)
         if im_class and im_class_module:
             path = [im_class_module]
-        path.append(getattr(im_class, '__name__', None))
-        path.append(getattr(obj, '__name__', None))
-    return '.'.join(filter(None, path))
+        path.append(getattr(im_class, "__name__", None))
+        path.append(getattr(obj, "__name__", None))
+    return ".".join(filter(None, path))
 
 
 class Decorator(object):
@@ -77,7 +77,7 @@ class Decorator(object):
             if not self.func:
                 # Decorator was initialized with arguments
                 return self.__class__(args[0], **self.params), True
-            return self.__class__(self.func,  _initialized=True, **self.params)(*args, **kwargs), True
+            return self.__class__(self.func, _initialized=True, **self.params)(*args, **kwargs), True
         self.fqn = self.get_fqn()
         self.args = args
         self.kwargs = kwargs
@@ -91,7 +91,7 @@ class Decorator(object):
         self.before()
         try:
             self.result = self.func(*self.args, **self.kwargs)
-        except:
+        except:  # noqa: E722
             self.exc_info = sys.exc_info()
             self.exception()
             raise
@@ -133,14 +133,14 @@ class ChainedDecorator(Decorator):
 
     def __init__(self, func=None, decorators=None, **params):
         """Override the init just to make the decorators argument more visible"""
-        params['decorators'] = decorators
+        params["decorators"] = decorators
         super(ChainedDecorator, self).__init__(func, **params)
 
     def before(self):
-        for decorator in self.params.get('decorators', []):
+        for decorator in self.params.get("decorators", []):
             self.func = decorator(self.func)
-            if hasattr(self.func, 'fqn'):
-                setattr(self.func, 'fqn', self.fqn)
+            if hasattr(self.func, "fqn"):
+                setattr(self.func, "fqn", self.fqn)
 
 
 chained_decorator = ChainedDecorator

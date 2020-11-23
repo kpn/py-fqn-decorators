@@ -1,3 +1,20 @@
-# Additional packages
--r requirements/requirements-base.txt
--r requirements/requirements-testing.txt
+# Package in develop mode
+-e .
+
+importlib-metadata
+
+# Distribution
+twine
+wheel
+
+# Code style
+mypy; python_version >= '3.5'
+isort[pyproject]
+flake8
+
+# Tests
+tox
+pytest
+pytest-cov
+pytest-asyncio; python_version >= '3.5'
+mock

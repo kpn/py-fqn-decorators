@@ -19,11 +19,12 @@ class AsyncDecorator(Decorator):
             self.before()
             try:
                 self.result = await self.func(*self.args, **self.kwargs)
-            except:
+            except:  # noqa: E722
                 self.exc_info = sys.exc_info()
                 self.exception()
                 raise
             finally:
                 self.after()
             return self.result
+
         return async_wrapper(*args, **kwargs)
