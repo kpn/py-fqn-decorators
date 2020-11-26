@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import functools
 import sys
 
@@ -9,29 +8,23 @@ def get_fqn(obj):
     It only works for classes, methods and functions.
     It is unable to properly determine the FQN of class instances, static methods and class methods.
     """
-    path = [getattr(obj, "__module__", None)]
-    qualname = getattr(obj, "__qualname__", None)
-    if qualname:
-        path.append(qualname.replace("<locals>.", ""))
-        im_self = getattr(obj, "__self__", None)
-        im_class = getattr(im_self, "__class__", None)
-        if im_self and im_class:
-            path = [
-                getattr(im_class, "__module__", None),
-                getattr(im_class, "__name__", None),
-                getattr(obj, "__name__", None),
-            ]
+    im_self = getattr(obj, "__self__", None)
+    im_class = getattr(im_self, "__class__", None)
+    if im_self and im_class:
+        path = [
+            getattr(im_class, "__module__", None),
+            getattr(im_class, "__name__", None),
+            getattr(obj, "__name__", None),
+        ]
     else:
-        im_class = getattr(obj, "im_class", None)
-        im_class_module = getattr(im_class, "__module__", None)
-        if im_class and im_class_module:
-            path = [im_class_module]
-        path.append(getattr(im_class, "__name__", None))
-        path.append(getattr(obj, "__name__", None))
+        path = [
+            getattr(obj, "__module__", None),
+            getattr(obj, "__qualname__", "").replace("<locals>.", ""),
+        ]
     return ".".join(filter(None, path))
 
 
-class Decorator(object):
+class Decorator:
     """
     A base class to easily create decorators.
     """

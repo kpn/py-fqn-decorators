@@ -96,13 +96,13 @@ Async Decorator
 There's also support for decorating coroutines (or any awaitable), for Python >=3.5 only.
 
 The implementation is the same as with the sync version, just inherit from
-`fqn_decorators.async.AsyncDecorator` instead.
+`fqn_decorators.asynchronous.AsyncDecorator` instead.
 
 Example:
 ```python
 import asyncio
 import time
-from fqn_decorators.async import AsyncDecorator
+from fqn_decorators.asynchronous import AsyncDecorator
 
 class time_it_async(AsyncDecorator):
 

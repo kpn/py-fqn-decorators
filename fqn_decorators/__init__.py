@@ -1,2 +1,1 @@
-# -*- coding: utf-8 -*-
-from .decorators import *
+from .decorators import *  # noqa: F403, F401

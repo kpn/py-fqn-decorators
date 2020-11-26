@@ -1,6 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from setuptools import find_packages, setup
+
+# setuptools doesn't support type hints for now:
+# https://github.com/pypa/setuptools/issues/2345
+# so we ignoring mypy checks on this package
+from setuptools import find_packages, setup  # type: ignore
 
 with open("README.md") as f:
     long_description = f.read()
@@ -26,10 +29,7 @@ setup(
         "Intended Audience :: Developers",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",

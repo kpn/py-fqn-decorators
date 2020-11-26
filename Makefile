@@ -1,62 +1,70 @@
 # This Makefile requires the following commands to be available:
-# * python3.6
-# * docker
-# * docker-compose
+# * python3.7
 
-DEPS:=requirements.txt
-DOCKER_COMPOSE:=$(shell which docker-compose)
+SRC:=fqn_decorators tests setup.py
 
-PIP:="venv/bin/pip"
-CMD_FROM_VENV:=". venv/bin/activate; which"
-TOX=$(shell "$(CMD_FROM_VENV)" "tox")
-PYTHON=$(shell "$(CMD_FROM_VENV)" "python")
-TWINE=$(shell "$(CMD_FROM_VENV)" "twine")
-TOX_PY_LIST="$(shell $(TOX) -l | grep ^py | xargs | sed -e 's/ /,/g')"
-
-.PHONY: clean pyclean test lint isort docker setup.py build publish
-
-tox:
-	$(TOX)
-
+.PHONY: pyclean
 pyclean:
-	@find . -name *.pyc -delete
-	@rm -rf *.egg-info build
-	@rm -rf coverage.xml .coverage
+	-find . -name "*.pyc" -delete
+	-rm -rf *.egg-info build
+	-rm -rf coverage*.xml .coverage
 
+.PHONY: clean
 clean: pyclean
-	@rm -rf venv
-	@rm -rf .tox
+	-rm -rf venv
+	-rm -rf .tox
 
+venv: PYTHON?=python3.7
 venv:
-	@python3.6 -m venv venv
-	@$(PIP) install -U "pip>=7.0" -q
-	@$(PIP) install -U setuptools -q
-	@$(PIP) install --use-feature=2020-resolver -r $(DEPS)
+	$(PYTHON) -m venv venv
+	venv/bin/pip install -U "pip>=7.0" -q
+	venv/bin/pip install -U setuptools -q
+	venv/bin/pip install -r requirements.txt
 
-test: venv pyclean
-	$(TOX) -e $(TOX_PY_LIST)
+## Code style
+.PHONY: lint
+lint: lint/black lint/flake8 lint/isort lint/mypy
 
-test/%: venv pyclean
-	$(TOX) -e $(TOX_PY_LIST) -- $*
+.PHONY: lint/black
+lint/black: venv
+	venv/bin/black --diff --check $(SRC)
 
-lint: venv
-	@$(TOX) -e isort-check
-	@$(TOX) -e flake8
+.PHONY: lint/flake8
+lint/flake8: venv
+	venv/bin/flake8 $(SRC)
 
-isort: venv
-	@$(TOX) -e isort-fix
+.PHONY: lint/isort
+lint/isort: venv
+	venv/bin/isort --diff --check $(SRC)
 
-docker:
-	$(DOCKER_COMPOSE) run --rm --service-ports app bash
+.PHONY: lint/mypy
+lint/mypy: venv
+	venv/bin/mypy $(SRC)
 
-docker/%:
-	$(DOCKER_COMPOSE) run --rm --service-ports app make $*
+.PHONY: format
+format: format/isort format/black
+
+.PHONY: format/isort
+format/isort: venv
+	venv/bin/isort $(SRC)
+
+.PHONY: format/black
+format/black: venv
+	venv/bin/black $(SRC)
+
+## Tests
+.PHONY: unittests
+unittests: TOX_ENV?=ALL
+unittests: TOX_EXTRA_PARAMS?=""
+unittests: venv
+	venv/bin/tox -e $(TOX_ENV) $(TOX_EXTRA_PARAMS)
+
+.PHONY: test
+test: pyclean venv unittests
 
 ## Distribution
-build: venv tox
+.PHONY: build
+build: venv
 	-rm -rf dist build
-	$(PYTHON) setup.py sdist bdist_wheel
-	$(TWINE) check dist/*
-
-publish: build
-	$(TWINE) upload dist/*
+	venv/bin/python setup.py sdist bdist_wheel
+	venv/bin/twine check dist/*

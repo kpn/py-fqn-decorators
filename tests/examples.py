@@ -7,13 +7,13 @@ def my_test_func(a):
 
 
 @fqn_decorators.Decorator()
-class A(object):
+class A:
     @fqn_decorators.Decorator
     def method(self, a):
         return a
 
 
-class B(object):
+class B:
     @fqn_decorators.Decorator
     def method(self, b):
         return b
