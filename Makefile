@@ -31,7 +31,7 @@ venv:
 	@python3.6 -m venv venv
 	@$(PIP) install -U "pip>=7.0" -q
 	@$(PIP) install -U setuptools -q
-	@$(PIP) install -r $(DEPS)
+	@$(PIP) install --use-feature=2020-resolver -r $(DEPS)
 
 test: venv pyclean
 	$(TOX) -e $(TOX_PY_LIST)
@@ -40,8 +40,8 @@ test/%: venv pyclean
 	$(TOX) -e $(TOX_PY_LIST) -- $*
 
 lint: venv
-	@$(TOX) -e lint
 	@$(TOX) -e isort-check
+	@$(TOX) -e flake8
 
 isort: venv
 	@$(TOX) -e isort-fix
@@ -53,14 +53,9 @@ docker/%:
 	$(DOCKER_COMPOSE) run --rm --service-ports app make $*
 
 ## Distribution
-setup.py: venv
-	@$(PYTHON) setup_gen.py
-
 build: venv tox
-	-rm -f setup.py
 	-rm -rf dist build
-	$(MAKE) setup.py
-	$(PYTHON) setup.py sdist
+	$(PYTHON) setup.py sdist bdist_wheel
 	$(TWINE) check dist/*
 
 publish: build
