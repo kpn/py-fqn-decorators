@@ -1,19 +1,50 @@
 language: python
-sudo: required
-services:
-- docker
-script:
-- make docker/build
-before_install:
-- pip install codecov
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+install:
+  - pip install codecov tox-travis
+script: tox
 after_success:
-- codecov
-deploy:
-  provider: pypi
-  user: kpn-digital
-  skip_cleanup: true
-  password:
-    secure: U4xdw255nzxtgjDb1IDROodBYp19RtTfsSkn3SX87s04/FF3/6jx46NQWLdnorZyCNkpTueKCWpUo364IeXtzg5XxyDNmOZUOkZYbzsszb7ZrCfC+4/mQiY1xl9ZDjDdnjgS2TPw1Zik2SVbwD3duwkXah9Juh8MkpcqYwFNSVjjUXVDiY7qN6VLT/uTqVDK6oTLKDZqMhMMSQ3tlVkdxGuR3CrXUOxreEiBod2WxCjprgZpzNBK9S0SNRNI/K8WtRUye7FMAGpkqR2+aQrFQre3qaALoYDSod+0Xknrsa0Bfz2RaCf0Mu6CBhKADMAc+1015r1w6MZ44T0YI223JMI81XTPcilpwnxDAQ+/+xM6vPIeMWtPEd0973WTPNdTMIZSgS1O45h7wwfUImf/t9nvCgbBliEFkPDOm5HsOc1YWu6LiagH5FbUwU5HCYlaXshwu2fPLwrlR3TvYa7ptPbiPiJ4BCHMWkHklXjzWcPR4vf86asaLe5jwq7A/nD9Kex514p/tzlBKotpddu6PSS7FxO5tfOVW5fxayS8RzmXdnsYFpb96Mlgk6qfGfhJ8EzOEqwrdjRgfuFKjceSWN5Lae5cS8F3n0cA88warvkiYlU9egnzAVCNYPppjMu93PXl361bqTC0yOwkcQfvKdc7TjtNA9D2UovEapuDxb8=
-  on:
-    tags: true
-    all_branches: true
+  - codecov
+
+stages:
+  - name: lint checks
+  - name: test
+  - name: check build
+  - name: deploy
+
+jobs:
+  include:
+    - stage: lint checks
+      language: generic
+      services: docker
+      install: true
+      after_success: true
+      script:
+        - docker run -v $(pwd):/app -w /app -i -t python:3.7 bash -c "make lint"
+      before_install:
+        - docker pull python:3.7
+    - stage: check build
+      language: generic
+      services: docker
+      install: true
+      after_success: true
+      script:
+        - docker run -v $(pwd):/app -w /app -i -t python:3.7 bash -c "make build"
+      before_install:
+        - docker pull python:3.7
+    - stage: deploy
+      script: skip
+      install: true
+      after_success: true
+      deploy:
+        provider: pypi
+        user: kpn-digital
+        skip_cleanup: true
+        password:
+          secure: U4xdw255nzxtgjDb1IDROodBYp19RtTfsSkn3SX87s04/FF3      /6jx46NQWLdnorZyCNkpTueKCWpUo364IeXtzg5XxyDNmOZUOkZYbzsszb7ZrCfC+4      /mQiY1xl9ZDjDdnjgS2TPw1Zik2SVbwD3duwkXah9Juh8MkpcqYwFNSVjjUXVDiY7qN6VLT      /uTqVDK6oTLKDZqMhMMSQ3tlVkdxGuR3CrXUOxreEiBod2WxCjprgZpzNBK9S0SNRNI/K8WtRUye7FMAGpkqR2+aQrFQre3qaALoYDSod+0Xknrsa0Bfz2RaCf0Mu6CBhKADMAc+1015r1w6MZ44T0YI223JMI81XTPcilpwnxDAQ+/+xM6vPIeMWtPEd0973WTPNdTMIZSgS1O45h7wwfUImf/t9nvCgbBliEFkPDOm5HsOc1YWu6LiagH5FbUwU5HCYlaXshwu2fPLwrlR3TvYa7ptPbiPiJ4BCHMWkHklXjzWcPR4vf86asaLe5jwq7A/nD9Kex514p/tzlBKotpddu6PSS7FxO5tfOVW5fxayS8RzmXdnsYFpb96Mlgk6qfGfhJ8EzOEqwrdjRgfuFKjceSWN5Lae5cS8F3n0cA88warvkiYlU9egnzAVCNYPppjMu93PXl361bqTC0yOwkcQfvKdc7TjtNA9D2UovEapuDxb8=
+        on:
+          tags: true
+          all_branches: true

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import functools
 
 import mock
@@ -14,7 +12,7 @@ class InheritedExample(examples.B):
     pass
 
 
-class TestFqn(object):
+class TestFqn:
     def test_function(self):
         assert fqn_decorators.get_fqn(fqn_decorators.get_fqn) == "fqn_decorators.decorators.get_fqn"
 
@@ -37,7 +35,7 @@ class TestFqn(object):
         assert fqn_decorators.get_fqn(examples.A) == "tests.examples.A"
 
 
-class TestDecorator(object):
+class TestDecorator:
     def test_getattr(self):
         class Decorator(fqn_decorators.Decorator):
             pass
@@ -55,7 +53,7 @@ class TestDecorator(object):
                 self.kwargs["username"] = "root"
 
         @Decorator
-        class User(object):
+        class User:
             def __init__(self, username):
                 self.username = username
 
@@ -68,7 +66,7 @@ class TestDecorator(object):
                 self.kwargs["username"] = self.params["username"]
 
         @Decorator(username="root")
-        class User(object):
+        class User:
             def __init__(self, username):
                 self.username = username
 
@@ -103,7 +101,7 @@ class TestDecorator(object):
                 if self.result != "root":
                     raise Exception("Not root")
 
-        class User(object):
+        class User:
             def __init__(self, username):
                 self.username = username
 
@@ -120,7 +118,7 @@ class TestDecorator(object):
             def after(self):
                 self.result = False
 
-        class User(object):
+        class User:
             @staticmethod
             @Decorator
             def staticmethod():
@@ -133,7 +131,7 @@ class TestDecorator(object):
             def after(self):
                 self.result = False
 
-        class User(object):
+        class User:
             @classmethod
             @Decorator
             def classmethod(cls):
@@ -146,7 +144,7 @@ class TestDecorator(object):
             def after(self):
                 self.result = False
 
-        class User(object):
+        class User:
             @staticmethod
             @Decorator
             def staticmethod():
@@ -159,7 +157,7 @@ class TestDecorator(object):
             def after(self):
                 self.result = False
 
-        class User(object):
+        class User:
             @classmethod
             @Decorator
             def classmethod(cls):
@@ -168,7 +166,7 @@ class TestDecorator(object):
         assert User.classmethod() is False
 
     def test_exception(self):
-        class User(object):
+        class User:
             @fqn_decorators.Decorator
             def check_permission(self):
                 raise Exception("Permission denied")
@@ -200,7 +198,7 @@ class TestDecorator(object):
         assert f.result is None
 
 
-class TestChainedDecorator(object):
+class TestChainedDecorator:
     def test_chaining(self):
         def simple_decorator(func):
             def wrapper(*args, **kwargs):
@@ -224,7 +222,7 @@ class TestChainedDecorator(object):
             def after(self):
                 self.result = self.fqn
 
-        class MyClass(object):
+        class MyClass:
             @fqn_decorators.chained_decorator(
                 decorators=[SimpleDecorator, simple_decorator, simple_keyword_decorator(result=False)]
             )
