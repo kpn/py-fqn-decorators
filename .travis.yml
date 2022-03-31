@@ -3,8 +3,9 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
+  - "3.9"
 install:
-  - pip install codecov tox-travis
+  - pip install --upgrade setuptools importlib-metadata codecov tox-travis
 script: tox
 after_success:
   - codecov

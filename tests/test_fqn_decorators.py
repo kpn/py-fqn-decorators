@@ -197,6 +197,22 @@ class TestDecorator:
         assert not f.kwargs
         assert f.result is None
 
+    def test_overridden_fqn_parameterless(self):
+        """
+        Tests that the inherited decorator is able to retrieve the overridden FQN.
+        """
+
+        class Decorator(fqn_decorators.Decorator):
+            def after(self):
+                assert self.get_fqn() == "bar"
+
+        @Decorator
+        def foo():
+            pass
+
+        foo.fqn = "bar"
+        foo()
+
 
 class TestChainedDecorator:
     def test_chaining(self):

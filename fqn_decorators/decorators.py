@@ -70,7 +70,16 @@ class Decorator:
             if not self.func:
                 # Decorator was initialized with arguments
                 return self.__class__(args[0], **self.params), True
-            return self.__class__(self.func, _initialized=True, **self.params)(*args, **kwargs), True
+
+            # The `self.func` at the caller site is replaced with the `self` decorator instance.
+            # Should a user override `fqn` on it, the «inner» decorator created for the particular
+            # function call will still see the FQN as returned by the global `get_fqn()` function.
+            # In particular, that'd prevent an inherited decorator from seeing the overridden FQN
+            # since it'd be lost in the «outer» decorator instance.
+            inner_decorator = self.__class__(self.func, _initialized=True, **self.params)
+            inner_decorator.fqn = self.get_fqn()
+            return inner_decorator(*args, **kwargs), True
+
         self.fqn = self.get_fqn()
         self.args = args
         self.kwargs = kwargs
