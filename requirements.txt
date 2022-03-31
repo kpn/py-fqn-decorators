@@ -1,9 +1,6 @@
 # Package in develop mode
 -e .
 
-# Latest tox (3.20.1 at the moment) requires importlib-metadata<3,>=0.12
-importlib-metadata<3
-
 # Distribution
 twine
 wheel
@@ -15,8 +12,11 @@ flake8
 black
 
 # Tests
-tox==3.20.1
+tox
 pytest
 pytest-cov
 pytest-asyncio; python_version >= '3.5'
 mock
+
+# Typing
+types-mock
