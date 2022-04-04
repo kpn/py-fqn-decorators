@@ -1,7 +1,7 @@
 FQN Decorators
 ==============
 
-[![](https://secure.travis-ci.org/kpn-digital/py-fqn-decorators.svg?branch=master)](http://travis-ci.org/kpn-digital/py-fqn-decorators?branch=master)
+[![](https://github.com/kpn/py-fqn-decorators/actions/workflows/tests.yml/badge.svg)](https://github.com/kpn/py-fqn-decorators/actions/workflows/tests.yml)
 [![](https://img.shields.io/codecov/c/github/kpn-digital/py-fqn-decorators/master.svg)](http://codecov.io/github/kpn-digital/py-fqn-decorators?branch=master)
 [![](https://img.shields.io/pypi/v/fqn-decorators.svg)](https://pypi.python.org/pypi/fqn-decorators)
 [![](https://readthedocs.org/projects/fqn-decorators/badge/?version=latest)](http://fqn-decorators.readthedocs.org/en/latest/?badge=latest)
